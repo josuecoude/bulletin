@@ -1,0 +1,28 @@
+name: Publier le bulletin depuis Drive
+
+on:
+  schedule:
+    # 9 h 40 UTC = 5 h 40 a l'heure d'ete de Toronto, 4 h 40 a l'heure d'hiver.
+    - cron: '40 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Telecharger les fichiers depuis Google Drive
+        run: |
+          curl -L -f -o index.html "https://drive.google.com/uc?export=download&id=1vGRN92QbQPZpfS6w0g07i6GiHIqenN0e"
+          curl -L -f -o circulaires.html "https://drive.google.com/uc?export=download&id=1aS3qz-aUPEgDXo9Zy8if5O1D04f0SXuA"
+          curl -L -f -o "bulletin-$(date +%Y-%m-%d).mp3" "https://drive.google.com/uc?export=download&id=1q6axvjeIyJ5vYhbLe9PZU_EfR_iWrQ8v"
+          ls -la index.html circulaires.html "bulletin-$(date +%Y-%m-%d).mp3"
+      - name: Publier sur GitHub Pages
+        run: |
+          git config user.name "Muse bulletin"
+          git config user.email "muse-bulletin@example.com"
+          git add index.html circulaires.html "bulletin-$(date +%Y-%m-%d).mp3"
+          git diff --cached --quiet || (git commit -m "Bulletin du $(date +%Y-%m-%d)" && git push)
