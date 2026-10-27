@@ -2,8 +2,16 @@ name: Publier le bulletin depuis Drive
 
 on:
   schedule:
-    # 9 h 40 UTC = 5 h 40 a l'heure d'ete de Toronto, 4 h 40 a l'heure d'hiver.
+    # Trois passages chaque matin : si l'un est manque ou retarde par GitHub,
+    # les suivants prennent le relais. Le flux ne fait un commit que si le
+    # contenu a change, donc les passages supplementaires ne coutent rien.
+    # Heures UTC -> Toronto : 9 h 40 = 5 h 40 (ete) / 4 h 40 (hiver) ;
+    # 10 h 40 = 6 h 40 (ete) / 5 h 40 (hiver) ; 11 h 40 = 7 h 40 (ete) / 6 h 40 (hiver).
+    # En hiver, le depot de 5 h 00 (10 h 00 UTC) a lieu apres le premier passage :
+    # c'est le passage de 10 h 40 UTC qui publie l'edition du jour.
     - cron: '40 9 * * *'
+    - cron: '40 10 * * *'
+    - cron: '40 11 * * *'
   workflow_dispatch:
 
 permissions:
